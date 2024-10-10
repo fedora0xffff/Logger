@@ -84,6 +84,7 @@ namespace logger
 
         void setWriteToStdout(bool writeToStdout);
         void setPrintLogStartStop(bool printStartStop);
+        void setLogFilePath(const std::string&);
 
         template<class... Ts>
         void log(Ts&&... args) {

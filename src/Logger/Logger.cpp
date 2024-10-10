@@ -87,6 +87,10 @@ void logger::Logger::setPrintLogStartStop(bool printLogStartStop) {
      config.save();
 }
 
+void logger::Logger::setLogFilePath(const std::string &) {
+    
+}
+
 void logger::Logger::writeLog() {
     std::ofstream log_stream(log_file, std::ios::out | std::ios::app);
     

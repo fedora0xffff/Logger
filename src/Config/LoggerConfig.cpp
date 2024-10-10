@@ -11,7 +11,7 @@ namespace
     using namespace std::literals;
     const auto logConfigName = "logConfig.json"sv;
     const auto configPath = "~/.logger"sv;
-    const auto logPath = "/var/log/logger_directory"sv;
+    
     const auto logFile = "logger"sv;
 }
 
@@ -26,8 +26,7 @@ writeToStdout_(getValue(config, "writeToStdout", false)),
 disableLogger_(getValue(config, "disableLogger", false))
 {}
 
-
-logger::LoggerConfig::operator json() const
+logger::LoggerConfig::operator nlohmann::json() const
 {
     return 
     {
@@ -56,9 +55,9 @@ std::string logger::LoggerConfig::configAbsolutePath()
     return os.str();
 }
 
-std::string logger::LoggerConfig::logsAbsolutePath()
+std::string logger::LoggerConfig::logsAbsolutePath() const
 {
-    return logPath.data();
+    return log_file_path;
 }
 
 std::string logger::LoggerConfig::logFileName()
@@ -76,4 +75,9 @@ void logger::LoggerConfig::save(const std::string &path) const
     {
         printToCerr(e.what());
     }
+}
+
+void logger::LoggerConfig::setLogFilePath(const std::string& path)
+{
+    log_file_path = path;
 }
