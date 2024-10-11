@@ -42,7 +42,7 @@ void logger::Logger::startWriteLoop() {
 }
 
 std::string logger::Logger::getLoggerFile() {
-    auto path = LoggerConfig::logsAbsolutePath();
+    auto path = config.logsAbsolutePath();
     std::ostringstream os;
 
     try {
@@ -87,8 +87,9 @@ void logger::Logger::setPrintLogStartStop(bool printLogStartStop) {
      config.save();
 }
 
-void logger::Logger::setLogFilePath(const std::string &) {
-    
+void logger::Logger::setLogFilePath(const std::string& path) {
+    config.setLogFilePath(path);
+    config.save();
 }
 
 void logger::Logger::writeLog() {

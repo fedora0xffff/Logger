@@ -41,24 +41,24 @@
 #define LOG_INFO(...) { \                                                                          
     std::ostringstream os__;                                                                        \
     os__ << "[INFO]: " << __LINE__ <<  ": " << __FUNCTION__ <<  ": ";                               \
-    wrapper::logger::Logger::getInstance().log(os__.str(),__VA_ARGS__);                             \
+    logger::Logger::getInstance().log(os__.str(),__VA_ARGS__);                             \
 }
 
 #define LOG_ERROR(...) {             \
     std::ostringstream os__;                                                                        \
     os__  << "[ERROR]: " << __LINE__ << ": " << __FUNCTION__ << ": ";                               \
-    wrapper::logger::Logger::getInstance().log(os__.str(),__VA_ARGS__);                             \
+    logger::Logger::getInstance().log(os__.str(),__VA_ARGS__);                             \
 }
 #ifndef NDEBUG
 #define LOG_DBG(...) { \                                                                          
     std::ostringstream os__;                                                                        \
     os__ << "[DEBUG]: " << __LINE__ << ": " << __FUNCTION__ << ": ";                                \
-    wrapper::logger::Logger::getInstance().log(os__.str(),__VA_ARGS__);                             \
+    logger::Logger::getInstance().log(os__.str(),__VA_ARGS__);                             \
 }
 #define TRACE {             \
    std::ostringstream os__;                                                                         \
     os__ << "[TRACE]: " << __LINE__ << ": " << __FUNCTION__ ;                                       \
-    wrapper::logger::Logger::getInstance().log(os__.str());                                         \
+    logger::Logger::getInstance().log(os__.str());                                         \
 }
 #else
 #define LOG_DBG(...) {}

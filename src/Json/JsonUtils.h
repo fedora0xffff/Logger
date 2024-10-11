@@ -1,6 +1,6 @@
 #pragma once 
-#include "json/json.hpp" 
-#include <exception>
+#include "../3rdparty/json/json.hpp" 
+#include <stdexcept>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -61,13 +61,13 @@ namespace json_utils
 		{
 			return config.at(key);
 		}
-		throw std::runtime_error("JSON file does not conatin the required field: ", key);
+		throw std::runtime_error("JSON file does not conatin the required field: " + key);
 	}
 
 	template <typename T>
 	struct JsonUtils
 	{
-		static std::vector<T> getVector(const json& config, const std::string& key)
+		static std::vector<T> getVector(const nlohmann::json& config, const std::string& key)
 		{
 			std::vector<T> values;
 			if (config.find(key) != config.end())
@@ -94,7 +94,7 @@ namespace json_utils
 			std::map<std::string, T> values;
 			if (config.find(key) != config.end())
 			{
-				auto semiMap = config.at(key).get<std::map<std::string, json>>();
+				auto semiMap = config.at(key).get<std::map<std::string, nlohmann::json>>();
 				std::for_each(std::begin(semiMap), std::end(semiMap), 
 								[&values](const auto& item) { values[item.first] = T(item.second); });
 			}

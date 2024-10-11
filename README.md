@@ -2,5 +2,6 @@
 This is a simple and lightweight logger with minimal functions
 
 ## TODO
-- fill in the demo part
+- impl set logger path
+- debug (fail on dir creation)
 - carry out the todos inside code 
