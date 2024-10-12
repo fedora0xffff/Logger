@@ -2,11 +2,22 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "logger_demo",
+            "name": "logger_demo_lldb",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/DEBUG/logger_demo",
-            "args": ["~/logger_demo", 10],
+            "args": ["~/logger_demo", "10"],
+            "stopAtEntry": true,
+            "cwd": "${workspaceFolder}",
+            "externalConsole": false,
+            "MIMode": "lldb"
+        },
+        {
+            "name": "logger_demo_gdb",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/DEBUG/logger_demo",
+            "args": ["~/logger_demo", "10"],
             "stopAtEntry": true,
             "cwd": "${workspaceFolder}",
             "externalConsole": false,
