@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 project(logger_demo)  
 
+# TODO: add a target for lib
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
