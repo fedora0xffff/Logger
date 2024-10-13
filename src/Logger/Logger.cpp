@@ -1,7 +1,7 @@
 #include "Logger.h"
+#include <iostream>
 #include <iomanip>
 #include <fstream>
-#include <iostream>
 
 namespace fs = std::filesystem;
 
@@ -78,12 +78,12 @@ std::string logger::Logger::getEntryTimeStamp() const {
 
 
 void logger::Logger::setWriteToStdout(bool writeToStdout) {
-    config.writeToStdout_ = writeToStdout;
+    config.log_to_stdout = writeToStdout;
     config.save();
 }
 
 void logger::Logger::setPrintLogStartStop(bool printLogStartStop) {
-     config.printStartStop_ = printLogStartStop;
+     config.print_start_stop = printLogStartStop;
      config.save();
 }
 
@@ -99,7 +99,7 @@ void logger::Logger::writeLog() {
         if (log_stream.is_open()) {
             log_stream << getEntryTimeStamp() << ": " << message_queue.front() << '\n';
         }
-        if (config.writeToStdout_) {
+        if (config.log_to_stdout) {
             std::cout << getEntryTimeStamp() << ": " << message_queue.front() << std::endl;
         }
         message_queue.pop();

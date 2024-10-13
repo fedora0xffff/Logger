@@ -4,10 +4,10 @@ namespace fs = std::filesystem;
 
 std::string getHelp(std::string dis_file) {
     std::stringstream help;
-    help << "Usage: " << dis_file << "<log_file_path> <log_entries_number>\n"
+    help << "Usage: " << dis_file << " <log_file_path> <log_entries_number>\n\n"
         << "specify a path to save the log file to\n"
         << "specify a number of log entries. Default is 100\n"
-        << "Example: " << dis_file << "~/demo_log 1000\n"
+        << "Example: " << dis_file << " ~/demo_log 1000\n"
         << "as demo entries will have been created, total write time will be shown\n";
     return help.str();
 }
@@ -19,10 +19,10 @@ int main(int argc, char* argv[]) {
     }
 
     std::string log_dir = fs::weakly_canonical(argv[1]);
-
-    if (!fs::is_directory(log_dir)) {
-        std::cout << "Directory does not exist!" << std::endl;
-        return -1;
+    if (!(fs::is_directory(log_dir) || fs::create_directory(log_dir))) {
+        std::cerr << "Failed to create the directory: " 
+                    << log_dir << std::endl;
+        return -1; 
     }
 
     logger::Logger::getInstance().setLogFilePath(log_dir);

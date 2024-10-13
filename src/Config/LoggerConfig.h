@@ -19,9 +19,9 @@ namespace logger {
         static std::string configAbsolutePath();
         static std::string logFileName();
     public:
-        bool printStartStop_ = false;
-        bool writeToStdout_ = false;
-        bool disableLogger_ = false;
-        std::string log_file_path = "~/.logger_directory";
+        bool print_start_stop = false;
+        bool log_to_stdout = false;
+        bool disable_logger = false;
+        std::string log_file_path = "/var/log/logger_directory";
     };
 } //namespace logger

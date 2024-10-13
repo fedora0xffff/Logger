@@ -22,12 +22,12 @@
 #pragma once
 #include "Config/LoggerConfig.h"
 #include <pthread.h>
+#include <filesystem>
+#include <sstream>
 #include <thread>
 #include <chrono>
-#include <sstream>
 #include <string>
 #include <mutex>
-#include <filesystem>
 #include <queue>
 
  
@@ -41,24 +41,24 @@
 #define LOG_INFO(...) { \                                                                          
     std::ostringstream os__;                                                                        \
     os__ << "[INFO]: " << __LINE__ <<  ": " << __FUNCTION__ <<  ": ";                               \
-    logger::Logger::getInstance().log(os__.str(),__VA_ARGS__);                             \
+    logger::Logger::getInstance().log(os__.str(),__VA_ARGS__);                                      \
 }
 
 #define LOG_ERROR(...) {             \
     std::ostringstream os__;                                                                        \
     os__  << "[ERROR]: " << __LINE__ << ": " << __FUNCTION__ << ": ";                               \
-    logger::Logger::getInstance().log(os__.str(),__VA_ARGS__);                             \
+    logger::Logger::getInstance().log(os__.str(),__VA_ARGS__);                                      \
 }
 #ifndef NDEBUG
 #define LOG_DBG(...) { \                                                                          
     std::ostringstream os__;                                                                        \
     os__ << "[DEBUG]: " << __LINE__ << ": " << __FUNCTION__ << ": ";                                \
-    logger::Logger::getInstance().log(os__.str(),__VA_ARGS__);                             \
+    logger::Logger::getInstance().log(os__.str(),__VA_ARGS__);                                      \
 }
 #define TRACE {             \
    std::ostringstream os__;                                                                         \
     os__ << "[TRACE]: " << __LINE__ << ": " << __FUNCTION__ ;                                       \
-    logger::Logger::getInstance().log(os__.str());                                         \
+    logger::Logger::getInstance().log(os__.str());                                                  \
 }
 #else
 #define LOG_DBG(...) {}
@@ -71,7 +71,6 @@ namespace logger
     class Logger {
         Logger();
         Logger(const Logger&) = delete;
-
         void writeLog();
         std::string getLoggerFile();
     private:
@@ -95,15 +94,14 @@ namespace logger
             (buf << ... << std::forward<Ts>(args));
             message_queue.push(buf.str());
         }
-
         virtual ~Logger();
 
     private:
         bool logger_thread_running;
         std::string log_file;
         std::mutex queue_mtx;
-        std::thread logger_thread;
         std::stringstream buf;
+        std::thread logger_thread;
         std::queue<std::string> message_queue;
         LoggerConfig config;
     };

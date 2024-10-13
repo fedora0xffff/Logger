@@ -1,4 +1,5 @@
 #include "LoggerConfig.h"
+#include <stdlib.h>
 #include <sstream>
 #include <iostream>
 #include <exception>
@@ -10,9 +11,15 @@ namespace
 {
     using namespace std::literals;
     const auto logConfigName = "logConfig.json"sv;
-    const auto configPath = "~/.logger"sv;
-    
-    const auto logFile = "logger"sv;
+    const auto configPath = "/etc/logger"sv;
+    const auto logFile = "log"sv;
+
+    std::string getEnv(const std::string& str) {
+        if (auto res = getenv(str.c_str())) {
+            return res;
+        }
+        return {};
+    }
 }
 
 void printToCerr(std::string_view sv)
@@ -21,18 +28,20 @@ void printToCerr(std::string_view sv)
 }
 
 logger::LoggerConfig::LoggerConfig(const json& config) 
-: printStartStop_(getValue(config, "printStartStop", false)),
-writeToStdout_(getValue(config, "writeToStdout", false)),
-disableLogger_(getValue(config, "disableLogger", false))
+: print_start_stop(getValue(config, "print_start_stop", false)),
+log_file_path(getValue(config, "log_file_path", std::string())),
+disable_logger(getValue(config, "disable_logger", false)),
+log_to_stdout(getValue(config, "log_to_stdout", false))
 {}
 
 logger::LoggerConfig::operator nlohmann::json() const
 {
     return 
     {
-        { "printStartStop", printStartStop_ },
-        { "writeToStdout", writeToStdout_ },
-        { "disableLogger", disableLogger_ },
+        { "print_start_stop", print_start_stop },
+        { "disable_logger", disable_logger },
+        { "log_to_stdout", log_to_stdout },
+        { "log_file_path", log_file_path },
     };
 }
 
@@ -44,20 +53,21 @@ logger::LoggerConfig logger::LoggerConfig::load(const std::string& path)
         return LoggerConfig(obj);
     }
     catch(const std::exception& e)
-    { }
+    { 
+        printToCerr(e.what());
+    }
     return LoggerConfig();
 }
 
 std::string logger::LoggerConfig::configAbsolutePath()
 {
-    std::ostringstream os;
-    os << configPath << '/' << logConfigName;
-    return os.str();
+    return configPath.data();
 }
 
 std::string logger::LoggerConfig::logsAbsolutePath() const
 {
-    return log_file_path;
+    const auto home = getEnv("HOME");
+    return home + "/" + log_file_path;
 }
 
 std::string logger::LoggerConfig::logFileName()
