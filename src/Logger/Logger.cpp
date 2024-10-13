@@ -17,8 +17,8 @@ namespace {
 
 logger::Logger::Logger() 
 : logger_thread_running(false),
-log_file(getLoggerFile()),  
-config(LoggerConfig::load()) {
+config(LoggerConfig::load()),
+log_file(getLoggerFile()) {
     if (!logger_thread_running) {
         logger_thread_running = true;
         logger_thread = std::thread([&]() {
