@@ -1,8 +1,8 @@
 #include "LoggerConfig.h"
 #include <stdlib.h>
-#include <sstream>
-#include <iostream>
 #include <exception>
+#include <iostream>
+#include <sstream>
 
 using namespace json_utils;
 using json = nlohmann::json;
@@ -10,9 +10,10 @@ using json = nlohmann::json;
 namespace
 {
     using namespace std::literals;
-    const auto logConfigName = "logConfig.json"sv;
-    const auto configPath = "/etc/logger"sv;
-    const auto logFile = "log"sv;
+    const std::string log_default_path = "/var/log/logger_directory";
+    const auto config_name = "logConfig.json"sv;
+    const auto config_path = "/etc/logger"sv;
+    const auto log_file = "log"sv;
 
     std::string getEnv(const std::string& str) {
         if (auto res = getenv(str.c_str())) {
@@ -29,7 +30,7 @@ void printToCerr(std::string_view sv)
 
 logger::LoggerConfig::LoggerConfig(const json& config) 
 : print_start_stop(getValue(config, "print_start_stop", false)),
-log_file_path(getValue(config, "log_file_path", std::string())),
+log_file_path(getValue(config, "log_file_path", log_default_path)),
 disable_logger(getValue(config, "disable_logger", false)),
 log_to_stdout(getValue(config, "log_to_stdout", false))
 {}
@@ -61,7 +62,7 @@ logger::LoggerConfig logger::LoggerConfig::load(const std::string& path)
 
 std::string logger::LoggerConfig::configAbsolutePath()
 {
-    return configPath.data();
+    return config_path.data();
 }
 
 std::string logger::LoggerConfig::logsAbsolutePath() const
@@ -72,7 +73,7 @@ std::string logger::LoggerConfig::logsAbsolutePath() const
 
 std::string logger::LoggerConfig::logFileName()
 {
-    return logFile.data();
+    return log_file.data();
 }
 
 void logger::LoggerConfig::save(const std::string &path) const
