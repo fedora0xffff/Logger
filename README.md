@@ -11,7 +11,7 @@ This is a simple and lightweight logger with minimal functions such as:
 2. `cmake ..` (by default, the debug build type is used)
 
 ### target minilogger_demo
-`minilogger_demo` target demonstrates logger usage example by creating a log file with chosen number of entries and measuring write time in milliseconds.
+`minilogger_demo` target demonstrates logger usage example by creating a log file with chosen number of entries and measuring write time in nanoseconds.
 
 `minilogger_demo <log_file_path> <log_entries_number>`, see help for more info. 
 - `make minilogger_demo`
