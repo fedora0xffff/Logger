@@ -1,4 +1,5 @@
-#include "../src/Logger/Logger.h"
+#include "../headers/mini_logger.h"
+#include <iostream>
 #include <chrono>
 namespace fs = std::filesystem;
 
@@ -25,7 +26,11 @@ int main(int argc, char* argv[]) {
         return -1; 
     }
 
-    logger::Logger::getInstance().setLogFilePath(log_dir);
+    auto& logger = logger::Logger::getInstance();
+    logger.setLogFilePath(log_dir);
+    logger.setPrintLogStartStop(true);
+    logger.setLogFileName("demo_log");
+
     int log_entries = 100;
     if (argc > 2) {
         log_entries = std::stoi(argv[2]);
@@ -37,7 +42,7 @@ int main(int argc, char* argv[]) {
     }
     auto end = std::chrono::steady_clock::now();
 
-    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
-    std::cout << "Total write time: " << duration << "ms" << std::endl;
+    auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count();
+    std::cout << "Total write time: " << duration << "ns" << std::endl;
     return 0;
 }

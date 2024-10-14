@@ -1,5 +1,12 @@
+/***************************************************************************
+ * This file contains json util functions and specializations based on 
+ * nlohmann::json
+ * 
+ *  support: fedora0xffff
+ ****************************************************************************/
+
 #pragma once 
-#include "../3rdparty/json/json.hpp" 
+#include "3rdparty/json/json.hpp" 
 #include <stdexcept>
 #include <iostream>
 #include <string>

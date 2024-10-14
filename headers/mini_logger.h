@@ -11,16 +11,17 @@
  * - write messages both to file and stdout
  * 
  * TODO: 
- * - add support for any stream
- * - break down to smalled classes
- * - log destination can be configurable
+ * - add support for any stream (make targets)
+ * - break down to smalled classes (e.g., class Writer, class Logger)
+ * - add support for multiple log levels (e.g., error (only errors), 
+ *  info (info, errors), debug (all), etc)
  * 
  *
  *  support: fedora0xffff
  ****************************************************************************/
 
 #pragma once
-#include "Config/LoggerConfig.h"
+#include "LoggerConfig.h"
 #include <pthread.h>
 #include <filesystem>
 #include <sstream>
@@ -43,13 +44,11 @@
     os__ << "[INFO]: " << __LINE__ <<  ": " << __FUNCTION__ <<  ": ";                               \
     logger::Logger::getInstance().log(os__.str(),__VA_ARGS__);                                      \
 }
-
 #define LOG_ERROR(...) {             \
     std::ostringstream os__;                                                                        \
     os__  << "[ERROR]: " << __LINE__ << ": " << __FUNCTION__ << ": ";                               \
     logger::Logger::getInstance().log(os__.str(),__VA_ARGS__);                                      \
 }
-#ifndef NDEBUG
 #define LOG_DBG(...) { \                                                                          
     std::ostringstream os__;                                                                        \
     os__ << "[DEBUG]: " << __LINE__ << ": " << __FUNCTION__ << ": ";                                \
@@ -60,12 +59,9 @@
     os__ << "[TRACE]: " << __LINE__ << ": " << __FUNCTION__ ;                                       \
     logger::Logger::getInstance().log(os__.str());                                                  \
 }
-#else
-#define LOG_DBG(...) {}
-#define TRACE {}
-#endif //NDEBUG
 
 #endif //DISABLE_LOG
+
 namespace logger 
 {
     class Logger {
@@ -81,9 +77,10 @@ namespace logger
 
         static Logger& getInstance();
 
-        void setWriteToStdout(bool writeToStdout);
-        void setPrintLogStartStop(bool printStartStop);
+        void setWriteToStdout(bool);
+        void setPrintLogStartStop(bool);
         void setLogFilePath(const std::string&);
+        void setLogFileName(const std::string&);
 
         template<class... Ts>
         void log(Ts&&... args) {

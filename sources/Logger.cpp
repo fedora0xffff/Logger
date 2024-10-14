@@ -1,4 +1,4 @@
-#include "Logger.h"
+#include "../headers/mini_logger.h"
 #include <iostream>
 #include <iomanip>
 #include <fstream>
@@ -14,7 +14,7 @@ namespace {
         return system_clock::to_time_t(sctp);
     }
 }
-
+// TODO: get log file on each write?
 logger::Logger::Logger() 
 : logger_thread_running(false),
 config(LoggerConfig::load()),
@@ -28,7 +28,7 @@ log_file(getLoggerFile()) {
 }
 
 logger::Logger& logger::Logger::getInstance() {
-    static Logger obj;
+    static Logger obj{};
     return obj;
 }
 
@@ -47,7 +47,7 @@ std::string logger::Logger::getLoggerFile() {
 
     try {
         if (fs::is_directory(path) || fs::create_directory(path)) {
-            os << path << '/' << LoggerConfig::logFileName() << getFileTimeStamp() << ".log";
+            os << path << '/' << config.getLogFileName() << getFileTimeStamp() << ".log";
             std::ofstream log_stream;
             log_stream.open(log_file, std::ios::trunc);
             log_stream.close();
@@ -78,12 +78,12 @@ std::string logger::Logger::getEntryTimeStamp() const {
 
 
 void logger::Logger::setWriteToStdout(bool writeToStdout) {
-    config.log_to_stdout = writeToStdout;
+    config.setLogToStdout(writeToStdout);
     config.save();
 }
 
 void logger::Logger::setPrintLogStartStop(bool printLogStartStop) {
-     config.print_start_stop = printLogStartStop;
+     config.setPrintLogStartStop(printLogStartStop);
      config.save();
 }
 
@@ -92,14 +92,20 @@ void logger::Logger::setLogFilePath(const std::string& path) {
     config.save();
 }
 
-void logger::Logger::writeLog() {
+void logger::Logger::setLogFileName(const std::string& name)
+{
+    config.setLogFileName(name);
+    config.save();
+}
+void logger::Logger::writeLog()
+{
     std::ofstream log_stream(log_file, std::ios::out | std::ios::app);
     
     while (!message_queue.empty()) {
         if (log_stream.is_open()) {
             log_stream << getEntryTimeStamp() << ": " << message_queue.front() << '\n';
         }
-        if (config.log_to_stdout) {
+        if (config.getLogToStdout()) {
             std::cout << getEntryTimeStamp() << ": " << message_queue.front() << std::endl;
         }
         message_queue.pop();
