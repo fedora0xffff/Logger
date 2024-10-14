@@ -10,16 +10,20 @@ This is a simple and lightweight logger with minimal functions such as:
 1. `mkdir build && cd build`
 2. `cmake ..` (by default, the debug build type is used)
 
-### target demo
-`demo` target demonstrates logger usage example by creating a log file with chosen number of entries and measuring write time in milliseconds.
+### target minilogger_demo
+`minilogger_demo` target demonstrates logger usage example by creating a log file with chosen number of entries and measuring write time in milliseconds.
+
 `minilogger_demo <log_file_path> <log_entries_number>`, see help for more info. 
 - `make minilogger_demo`
+
 The built demo is saved as `build/<build_type>/minilogger_demo`
 
-### target libminilogger
-To build the mini-logger library:
+### target minilogger
+To build the mini-logger *library*:
+
 - `make minilogger`
 - `make install`
+
 After, you can include mini_logger.h, link against libminilogger and enjoy super light logging.
 
 ## TODO
