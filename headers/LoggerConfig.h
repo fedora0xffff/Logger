@@ -14,6 +14,13 @@
 
 namespace logger {
 
+    enum class LogLevel {
+        NONE = 0,
+        ERROR = 1,
+        INFO = 2,
+        DEBUG = 3,
+    };
+
     class LoggerConfig final
     {
     public:
@@ -28,7 +35,9 @@ namespace logger {
         void setPrintLogStartStop(bool);
         void setLogToStdout(bool);
         void setDisableLogger(bool);
+        void setLogLevel(LogLevel);
     public:
+        LogLevel getLogLevel() const;
         bool getPrintLogStartStop() const;
         bool getLogToStdout() const;
         bool getDisableLogger() const;
@@ -41,6 +50,7 @@ namespace logger {
         bool print_start_stop = false;
         bool log_to_stdout = false;
         bool disable_logger = false;
+        LogLevel log_level;
         std::string log_file_path;
         std::string log_file_name;
     };

@@ -3,20 +3,25 @@
 #include <exception>
 #include <iostream>
 #include <sstream>
+#include <filesystem>
+#include "LoggerConfig.h"
 
 using namespace json_utils;
 using json = nlohmann::json;
+namespace fs = std::filesystem;
 
 #define CERR(text) (std::cerr << __FILE__ << ' ' << __LINE__ << ": " << text << std::endl)
 
 namespace
 {
     using namespace std::literals;
-    const std::string log_default_path = "/var/log/logger_directory";
-    const std::string log_default_file_name = "mini-logger";
-    // TODO: atm, support only a user config
+    // TODO: only when runs as root 
+    //const std::string log_default_path = "/var/log/mini-logger";
+    const std::string log_default_user_path = ".mini-logger/logs";
+    const std::string log_default_file_name = "mini-log-file";
+    // atm, supporting only a user config
     const auto user_config_name = "logConfig.json"sv;
-    const auto config_path = "/etc/logger"sv;
+    const auto user_config_dir = ".mini-logger/config"sv;
 
     std::string getEnv(const std::string& str) {
         if (auto res = getenv(str.c_str())) {
@@ -28,7 +33,8 @@ namespace
 
 logger::LoggerConfig::LoggerConfig(const json& config) 
 : log_file_name(getValue(config, "log_file_name", log_default_file_name)),
-log_file_path(getValue(config, "log_file_path", log_default_path)),
+log_file_path(getValue(config, "log_file_path", getEnv("HOME") + "/" + log_default_user_path)),
+log_level(getValue(config, "log_level", LogLevel::INFO)),
 print_start_stop(getValue(config, "print_start_stop", false)),
 disable_logger(getValue(config, "disable_logger", false)),
 log_to_stdout(getValue(config, "log_to_stdout", false))
@@ -43,11 +49,19 @@ logger::LoggerConfig::operator nlohmann::json() const
         { "log_to_stdout", log_to_stdout },
         { "log_file_path", log_file_path },
         { "log_file_name", log_file_name },
+        { "log_level", static_cast<int>(log_level) },
     };
 }
 
 logger::LoggerConfig logger::LoggerConfig::load(const std::string& path)
 {
+    const auto dir = fs::path(path).remove_filename();
+    if (!fs::is_directory(dir)) {
+        std::stringstream cmd;
+        cmd << "mkdir -p " << dir << " > /dev/null 2>&1";
+        std::system(cmd.str().c_str());
+    }
+
     try
     {
         json obj = loadJson(path);
@@ -62,13 +76,14 @@ logger::LoggerConfig logger::LoggerConfig::load(const std::string& path)
 
 std::string logger::LoggerConfig::configAbsolutePath()
 {
-    return config_path.data();
+    std::stringstream path;
+    path << getEnv("HOME") << '/' << user_config_dir << '/' << user_config_name;
+    return path.str();
 }
 
 std::string logger::LoggerConfig::logsAbsolutePath() const
 {
-    const auto home = getEnv("HOME");
-    return home + "/" + log_file_path;
+    return log_file_path;
 }
 
 std::string logger::LoggerConfig::getLogFileName()
@@ -110,6 +125,16 @@ void logger::LoggerConfig::setLogToStdout(bool log_stdout)
 void logger::LoggerConfig::setDisableLogger(bool disable)
 {
     disable_logger = disable;
+}
+
+void logger::LoggerConfig::setLogLevel(logger::LogLevel level)
+{
+    log_level = level;
+}
+
+logger::LogLevel logger::LoggerConfig::getLogLevel() const
+{
+    return log_level;
 }
 
 bool logger::LoggerConfig::getPrintLogStartStop() const
