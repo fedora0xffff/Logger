@@ -49,6 +49,9 @@ void logger::Logger::createLoggerDir() const
     if (!fs::is_directory(log_path)) {
         std::stringstream cmd;
         cmd << "mkdir -p " << log_path << " > /dev/null 2>&1";
+        // TODO: subst with popen or execv+fork for suided apps
+        // or make an executor class, where the default is system,
+        // but a user can actually subst it with a different option
         std::system(cmd.str().c_str());
     }
 }
