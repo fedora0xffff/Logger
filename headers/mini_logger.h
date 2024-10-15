@@ -31,14 +31,6 @@
 #include <mutex>
 #include <queue>
 
- 
-#ifdef DISABLE_LOG
-#define LOG_INFO(...) {}
-#define TRACE {}
-#define LOG_ERROR(...) {}
-#define LOG_DBG(...) {}
-#else
-
 #define LOG_INFO(...) { \                                                                          
     std::ostringstream os__;                                                                        \
     os__ << "[INFO]: " << __LINE__ <<  ": " << __FUNCTION__ <<  ": ";                               \
@@ -59,8 +51,6 @@
     os__ << "[TRACE]: " << __LINE__ << ": " << __FUNCTION__ ;                                       \
     logger::Logger::getInstance().log(logger::LogLevel::DEBUG, os__.str());                         \
 }
-
-#endif //DISABLE_LOG
 
 namespace logger 
 {
