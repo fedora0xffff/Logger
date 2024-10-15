@@ -4,7 +4,6 @@
 #include <iostream>
 #include <sstream>
 #include <filesystem>
-#include "LoggerConfig.h"
 
 using namespace json_utils;
 using json = nlohmann::json;
