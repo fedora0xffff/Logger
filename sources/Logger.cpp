@@ -14,12 +14,13 @@ namespace {
         return system_clock::to_time_t(sctp);
     }
 }
-// TODO: get log file on each write?
+
 logger::Logger::Logger() 
-: logger_thread_running(false),
-config(LoggerConfig::load()),
-log_file(getLoggerFile()) {
-    if (!logger_thread_running) {
+: logger_thread_running(false), 
+config(LoggerConfig::load()) {
+    createLoggerDir();
+    if (!logger_thread_running && 
+        config.getLogLevel() != logger::LogLevel::NONE) {
         logger_thread_running = true;
         logger_thread = std::thread([&]() {
             this->startWriteLoop();
@@ -41,22 +42,26 @@ void logger::Logger::startWriteLoop() {
     }
 }
 
-std::string logger::Logger::getLoggerFile() {
+// TODO: add /var/log/mini-logger
+void logger::Logger::createLoggerDir() const
+{
+    const auto log_path = config.logsAbsolutePath();
+    if (!fs::is_directory(log_path)) {
+        std::stringstream cmd;
+        cmd << "mkdir -p " << log_path << " > /dev/null 2>&1";
+        std::system(cmd.str().c_str());
+    }
+}
+
+std::string logger::Logger::getLoggerFile()
+{
     auto path = config.logsAbsolutePath();
+    // log path might have been changed by the user
+    if (!fs::is_directory(path)) {
+        createLoggerDir();
+    }
     std::ostringstream os;
-
-    try {
-        if (fs::is_directory(path) || fs::create_directory(path)) {
-            os << path << '/' << config.getLogFileName() << getFileTimeStamp() << ".log";
-            std::ofstream log_stream;
-            log_stream.open(log_file, std::ios::trunc);
-            log_stream.close();
-        }
-    }
-    catch (std::exception& ex) {
-        std::cout << "Failed to create the log file, restart as sudo" << std::endl;
-    }
-
+    os << path << '/' << config.getLogFileName() << getFileTimeStamp() << ".log";
     return os.str();
 }
 
@@ -97,8 +102,16 @@ void logger::Logger::setLogFileName(const std::string& name)
     config.setLogFileName(name);
     config.save();
 }
+
+void logger::Logger::setLogLevel(logger::LogLevel level)
+{
+    config.setLogLevel(level);
+    config.save();
+}
+
 void logger::Logger::writeLog()
 {
+    const auto log_file = getLoggerFile();
     std::ofstream log_stream(log_file, std::ios::out | std::ios::app);
     
     while (!message_queue.empty()) {

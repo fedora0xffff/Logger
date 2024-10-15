@@ -42,22 +42,22 @@
 #define LOG_INFO(...) { \                                                                          
     std::ostringstream os__;                                                                        \
     os__ << "[INFO]: " << __LINE__ <<  ": " << __FUNCTION__ <<  ": ";                               \
-    logger::Logger::getInstance().log(os__.str(),__VA_ARGS__);                                      \
+    logger::Logger::getInstance().log(logger::LogLevel::INFO, os__.str(),__VA_ARGS__);              \
 }
 #define LOG_ERROR(...) {             \
     std::ostringstream os__;                                                                        \
     os__  << "[ERROR]: " << __LINE__ << ": " << __FUNCTION__ << ": ";                               \
-    logger::Logger::getInstance().log(os__.str(),__VA_ARGS__);                                      \
+    logger::Logger::getInstance().log(logger::LogLevel::ERROR, os__.str(),__VA_ARGS__);             \
 }
 #define LOG_DBG(...) { \                                                                          
     std::ostringstream os__;                                                                        \
     os__ << "[DEBUG]: " << __LINE__ << ": " << __FUNCTION__ << ": ";                                \
-    logger::Logger::getInstance().log(os__.str(),__VA_ARGS__);                                      \
+    logger::Logger::getInstance().log(logger::LogLevel::DEBUG, os__.str(),__VA_ARGS__);             \
 }
 #define TRACE {             \
    std::ostringstream os__;                                                                         \
     os__ << "[TRACE]: " << __LINE__ << ": " << __FUNCTION__ ;                                       \
-    logger::Logger::getInstance().log(os__.str());                                                  \
+    logger::Logger::getInstance().log(logger::LogLevel::DEBUG, os__.str());                         \
 }
 
 #endif //DISABLE_LOG
@@ -73,6 +73,7 @@ namespace logger
         std::string getFileTimeStamp() const;
         std::string getEntryTimeStamp() const;
         void startWriteLoop();
+        void createLoggerDir() const;
     public:
 
         static Logger& getInstance();
@@ -81,21 +82,25 @@ namespace logger
         void setPrintLogStartStop(bool);
         void setLogFilePath(const std::string&);
         void setLogFileName(const std::string&);
+        void setLogLevel(LogLevel);
 
         template<class... Ts>
-        void log(Ts&&... args) {
+        void log(LogLevel level, Ts&&... args) {
+            if (level == LogLevel::NONE) return;
+
             buf.clear();
             buf.str("");
-
-            std::lock_guard lock(queue_mtx);
-            (buf << ... << std::forward<Ts>(args));
-            message_queue.push(buf.str());
+            if (level <= config.getLogLevel()) {
+                std::lock_guard lock(queue_mtx);
+                (buf << ... << std::forward<Ts>(args));
+                message_queue.push(buf.str());
+            }
         }
+
         virtual ~Logger();
 
     private:
         bool logger_thread_running;
-        std::string log_file;
         std::mutex queue_mtx;
         std::stringstream buf;
         std::thread logger_thread;
