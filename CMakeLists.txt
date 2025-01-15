@@ -48,6 +48,7 @@ add_library(${target_lib} SHARED
   )
 
 set(API "headers/mini_logger.h;headers/JsonUtils.h;headers/LoggerConfig.h;headers/3rdparty/json/json.hpp")
+#set(API "headers/mini_logger.h")
 
 include(GNUInstallDirs)
 
@@ -62,7 +63,10 @@ set_target_properties(
 
 set(CONF_FILE "${target_lib}.pc.in")
 configure_file(${CONF_FILE} "${CMAKE_SOURCE_DIR}/${target_lib}.pc" @ONLY)
-target_include_directories(${target_lib} PUBLIC headers)
+target_include_directories(${target_lib} PUBLIC 
+  ${CMAKE_SOURCE_DIR}/headers
+  ${CMAKE_SOURCE_DIR}/headers/3rdparty/json
+)
 
 install(TARGETS ${target_lib}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -72,3 +76,26 @@ install(TARGETS ${target_lib}
 install(FILES "${CMAKE_SOURCE_DIR}/${target_lib}.pc" 
     DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/pkgconfig"
 )
+
+# boost tests section
+
+find_library(boost-test 
+    NAMES libboost_unit_test_framework.so
+)
+
+if(boost-test)
+    message(STATUS "Boost test library found")
+    ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK)
+
+    list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+    include(boost-tests-helper)
+
+    # TODO: how to invoke tests automatically on a debug build type?
+    # можно конечно и без этого, а просто в скрипте билда вызвать cmake --build --target test
+    add_boost_test(tests/Logger_test.cpp ${target_lib})
+    add_boost_test(tests/General_test.cpp ${target_lib})
+
+    # запускать можно либо так: ctest .. 
+    # либо так: cmake --build . --target test   
+    # либо так: make test
+endif()

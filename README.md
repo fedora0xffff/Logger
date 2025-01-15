@@ -5,7 +5,7 @@ This is a simple and lightweight logger with minimal functions such as:
 - set if start/stop should be printed on logger creation/destruction
 - set if log entries should be written to stdout apart from file
 
-## Build
+## Build (Linux only atm)
 
 1. `mkdir build && cd build`
 2. `cmake ..` (by default, the debug build type is used)
@@ -25,6 +25,16 @@ To build the mini-logger *library*:
 - `make install`
 
 After, you can include mini_logger.h, link against libminilogger and enjoy super light logging.
+
+### Run tests
+For this, make sure the package `libboost-test*` has been installed to your system. 
+
+On a Debian based OS run: `sudo apt install libboost-test-(current-boost-version)`
+
+After, get to the build directory and run: 
+
+`make all`
+`ctest ..`
 
 ## TODO
 - add support for multiple log levels (e.g., error (only errors), 

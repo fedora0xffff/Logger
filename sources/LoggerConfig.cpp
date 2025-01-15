@@ -1,4 +1,4 @@
-#include "../headers/LoggerConfig.h"
+#include "LoggerConfig.h"
 
 #include <stdlib.h>
 

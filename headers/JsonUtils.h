@@ -12,7 +12,7 @@
 #include <string>
 #include <vector>
 
-#include "3rdparty/json/json.hpp"
+#include "json.hpp"
 
 namespace json_utils {
 void saveJson(const std::string& path, const nlohmann::json& object);

@@ -2,7 +2,7 @@
 #include <iomanip>
 #include <iostream>
 
-#include "../headers/mini_logger.h"
+#include "mini_logger.h"
 
 namespace fs = std::filesystem;
 
