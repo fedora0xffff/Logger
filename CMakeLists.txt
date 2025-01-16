@@ -63,9 +63,9 @@ set_target_properties(
 
 set(CONF_FILE "${target_lib}.pc.in")
 configure_file(${CONF_FILE} "${CMAKE_SOURCE_DIR}/${target_lib}.pc" @ONLY)
-target_include_directories(${target_lib} PUBLIC 
+
+target_include_directories(${target_lib} PUBLIC
   ${CMAKE_SOURCE_DIR}/headers
-  ${CMAKE_SOURCE_DIR}/headers/3rdparty/json
 )
 
 install(TARGETS ${target_lib}
